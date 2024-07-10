@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return
         }
 
-    }
+     }
     renderImages()
 
 })
