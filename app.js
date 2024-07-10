@@ -170,7 +170,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const svgContainer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svgContainer.setAttribute("height", "200px")
             if (imageData.end == true) {
-
+                ImageBox.innerHTML = " ";
+                console.log(imageBox.innerHTML);
                 return
             }
             for (let rect of imageData.rectangles) {
