@@ -100,6 +100,7 @@ document.getElementById('save').addEventListener('click', save_image);
 
 async function save_image() {
     try {
+        console.log(JSON.stringify(image));
         let response = await fetch('http://localhost:8000/save_image', {
             method: 'POST',
             headers: {
@@ -111,7 +112,6 @@ async function save_image() {
     } catch (error) {
         console.error('Error:', error);
     }
-
 }
 
 
@@ -153,11 +153,26 @@ document.addEventListener("DOMContentLoaded", () => {
     async function renderImage(id, imageBox) {
         try {
             const response = await fetch(`http://127.0.0.1:8000/picture_from_database/${id}/`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch images");
-            }
+            // const contentLength = response.headers.get('content-length');
+
+            // if (contentLength) {
+            //   const fileSize = parseInt(contentLength, 10);
+
+            // } else {
+            //   throw new Error('File size could not be determined');
+            // }
+            // if (!response.ok) {
+            //     throw new Error("Failed to fetch images");
+            // }
+
             const imageData = await response.json();
+            console.log(imageData);
             const svgContainer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svgContainer.setAttribute("height", "200px")
+            if (imageData.end == true) {
+
+                return
+            }
             for (let rect of imageData.rectangles) {
                 let newRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                 gsap.set(newRect, {
@@ -176,8 +191,19 @@ document.addEventListener("DOMContentLoaded", () => {
             imageBox.appendChild(svgContainer);
             return
         } catch (error) {
+            // console.log(error.innerHTML);
             const e = document.createElement("div");
-            e.innerHTML = "Error&nbsp;&nbsp;";
+
+            // if (error instanceof TypeError) {
+            //     e.innerHTML = "Error: FILE IS TOO LARGE&nbsp;&nbsp;";
+            //     console.log("kk");
+            // } else {
+
+                // e.innerHTML = "Error&nbsp;&nbsp;";
+                // e.innerHTML = error;
+            // }
+            // e.innerHTML = "Error&nbsp;&nbsp;";
+            e.innerHTML = error;
             const button = document.createElement("BUTTON");
             button.onclick = function() { renderImage(id, imageBox); };
             button.textContent = "Reload"

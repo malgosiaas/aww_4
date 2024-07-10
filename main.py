@@ -10,6 +10,9 @@ from sqlalchemy.orm import sessionmaker
 from typing import Annotated
 import random, time
 
+# uvicorn main:app --reload
+# python -m http.server 5500
+
 
 
 app = FastAPI()
@@ -19,9 +22,17 @@ origins = [
     "http://localhost:8001",
 ]
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://127.0.0.1:5500"],  # Frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,18 +57,16 @@ def post_picture(
     id: int = id,
     db: Session = Depends(get_db)
 ):
-
     if id <= db.query(models.Picture).count():
-        r = random.randint(1, 6)
-        r = 2
-        # if r == 1:
-        #     raise ValueError("That word is not allowed here")
+        r = random.randint(1, 10)
+        # r = 5
+        if r == 1:
+            raise ValueError("That word is not allowed here")
         if r == 2:
-            print("{id}")
             return "example_large.json"
         if r == 3:
             time.sleep(3)
-        id = db.query(models.Picture).count() - id
+        id = db.query(models.Picture).count() - id + 1
         row = db.query(models.Picture).get({"id": id})
         picture_data = {
             "id": id,
@@ -109,3 +118,7 @@ def save_image(image: schemas.Picture, db: Session = Depends(get_db)):
     db.expunge_all()
     db.close()
     return
+
+@app.get('//')
+def hello():
+    return {"hello": "hello"}
